@@ -47,7 +47,7 @@ if args.background:
     sys.stdout = open('%s/logs/%s_infiltrator.log' %(path, time_now), 'w')
 if args.interface:
     interface = args.interface
-if args.test:
+if args.testmode:
     test_mode = True
 if args.address:
     toaddrs = args.address
