@@ -45,8 +45,8 @@ path = str(os.getcwd())
 time_now = time.strftime("%I:%M:%S")
 if args.background:
     sys.stdout = open('%s/logs/%s_infiltrator.log' %(path, time_now), 'w')
-if args.iface:
-    interface = args.iface
+if args.interface:
+    interface = args.interface
 if args.test:
     test_mode = True
 if args.address:
