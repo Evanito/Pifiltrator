@@ -15,6 +15,7 @@ import argparse
 #Make more reliable in general
 #Auto exploit once connected
 #BSSID instead of ESSID
+#Try later if none found nearby
 
 # Default Settings, overwritten by args:
 interface = 'wlan0'
@@ -209,7 +210,7 @@ if crosschecked[0] == False:
                 subprocess.call(['sudo', 'reboot'])
                 raise SystemExit
     else:
-        print "None found.... rebooting."
+        print "None found..."
     print 'Wifite phase finished.'
 else:
     print "\nWe got one!\n%s ; %s" %(crosschecked[1], crosschecked[2])
@@ -221,5 +222,5 @@ else:
     subprocess.call(['sudo', 'reboot'])
     raise SystemExit
 
-if arg.autocrack:
+if args.autocrack:
     print "Autocrack Work in progress"
