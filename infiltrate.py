@@ -35,9 +35,9 @@ parser.add_argument("-i", "--interface", help="Choose wireless interface to use"
 parser.add_argument("-test", "--testmode", help="Will assume no internet connection when starting", action="store_true")
 parser.add_argument("-addy", "--address", help="Choose email address to receive notification email")
 parser.add_argument("-usr", "--username", help="Choose email address to send notification email, i.e.: user@gmail.com")
-parser.add_argument("-pwd", "--password", help="Choose email password to send notification email")
+parser.add_argument("-pwd", "--password", help="Choose password for email to send notification email")
 parser.add_argument("-wpa", "--wpaattack", help="Enable the slower WPA cracking as last resort", action="store_true")
-parser.add_argument("-dict", "--dictionary", help="Identify dictionary to use for WPA cracking")
+parser.add_argument("-dict", "--dictionary", help="Dictionary to use for WPA cracking")
 args = parser.parse_args()
 
 subprocess.call(["sudo", "clear"])
@@ -140,7 +140,7 @@ def send_email():
         server.quit()
         print 'Sent!'
     else:
-        print "Email requirements not defined. Not sending success email."
+        print "Email requirements not met. Not sending success email."
 
 def crosscheck():
     networks = populate_known()
@@ -221,6 +221,5 @@ else:
     subprocess.call(['sudo', 'reboot'])
     raise SystemExit
 
-
-
-
+if arg.autocrack:
+    print "Autocrack Work in progress"
