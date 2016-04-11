@@ -121,12 +121,12 @@ def connect_wifi(iface, ap, passwd):
         wep_connect(iface, ap, passwd)
 
 def send_email():
-	if toaddrs != '' and username != '' and pwd != '':
-	    print "Sending success email..."
-	    ni.ifaddresses(interface)
-	    ip = ni.ifaddresses(interface)[2][0]['addr']
+    if toaddrs != '' and username != '' and pwd != '':
+        print "Sending success email..."
+        ni.ifaddresses(interface)
+        ip = ni.ifaddresses(interface)[2][0]['addr']
         msg = "\r\n".join([
-            "From: %s" %(fromaddr),
+            "From: %s" %(username),
             "To: %s" %(toaddrs),
             "Subject: Infiltration successful",
             "",
@@ -139,7 +139,7 @@ def send_email():
         server.sendmail(username, toaddrs, msg)
         server.quit()
         print 'Sent!'
-	else:
+    else:
 		print "Email requirements not defined. Not sending success email."
 
 def crosscheck():
