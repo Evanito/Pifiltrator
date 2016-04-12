@@ -113,6 +113,7 @@ def encrypt_type(ap):
         return encryption[ap]
 
 def populate_known():
+    open('%s/cracked.csv' %(path), mode='a') #Create if it does not exist.
     with open('%s/cracked.csv' %(path), mode='r') as knowns:
         reader = csv.reader(knowns)
         networks = dict((rows[2],rows[3]) for rows in reader)
