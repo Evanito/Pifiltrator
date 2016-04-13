@@ -288,8 +288,8 @@ if is_connected() == True:
     if args.autocrack:
         open("autocrack.sh", "a")
         subprocess.call(["chmod", "+x", "autocrack.sh"])
-        print "----RUNNING AUTOCRACK.SH----"
+        print "!---RUNNING AUTOCRACK.SH---!"
         subprocess.call(["sudo", "sh", "autocrack.sh"])
-        print "----DONE----"
+        print "!-----------DONE-----------!"
 
 
