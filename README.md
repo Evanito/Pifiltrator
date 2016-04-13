@@ -1,4 +1,4 @@
-# Pifiltrator by Evanito
+# Pifiltrator
 <img src="https://imgur.com/NdB1p8w.png" width="200" height="250" />
 #####[New? Check out the wiki](https://github.com/Evanito/Pifiltrator/wiki)
 #####[Submit a bug](https://github.com/Evanito/Pifiltrator/issues/new)
