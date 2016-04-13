@@ -29,12 +29,7 @@ if platform.system() != "Linux":
 if str(subprocess.check_output(["whereis", "wifite"])) == 'wifite:\n':
     print "Wifite required! (As well as Wifite's dependencies)\nType 'install' below to install:\nWifite, aircrack-ng, Reaver, pyrit, tshark, and cowpatty\nor exit to cancel."
     if raw_input("Type 'install' manually to install...").lower() == "install":
-        subprocess.call(["sudo", "apt-get", "install", "wifite"])
-        subprocess.call(["sudo", "apt-get", "install", "aircrack-ng"])
-        subprocess.call(["sudo", "apt-get", "install", "reaver"])
-        subprocess.call(["sudo", "apt-get", "install", "pyrit"])
-        subprocess.call(["sudo", "apt-get", "install", "tshark"])
-        subprocess.call(["sudo", "apt-get", "install", "cowpatty"])
+        subprocess.call(["sudo", "apt-get", "install", "wifite", "aircrack-ng", "reaver", "pyrit", "tshark", "cowpatty"])
     else:
         print "User chose not to install, exiting."
         raise SystemExit
