@@ -219,8 +219,8 @@ def updatestable():
     omitupdatearg = sys.argv
     omitupdatearg.remove("--update") #No infinite update loops
     with open("%s/updatestable.sh" %(path), mode='w') as updatefile:
-        updatefile.write("rm infiltrate.py\n") #Would do this without file, but just in case internet fails, you will still have this as backup.
-        updatefile.write("wget https://raw.githubusercontent.com/Evanito/Pifiltrator/master/infiltrate.py\n")
+        updatefile.write("rm pifiltrate.py\n") #Would do this without file, but just in case internet fails, you will still have this as backup.
+        updatefile.write("wget https://raw.githubusercontent.com/Evanito/Pifiltrator/master/pifiltrate.py\n")
         updatefile.close()
     subprocess.call(["chmod", "+x", "updatestable.sh"])
     subprocess.call(["sh", "updatestable.sh"])
