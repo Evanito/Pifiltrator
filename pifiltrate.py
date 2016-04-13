@@ -215,7 +215,6 @@ def updatestable():
         updatefile.close()
     subprocess.call(["chmod", "+x", "updatestable.sh"])
     subprocess.call(["sh", "updatestable.sh"])
-    subprocess.call(["rm", "updatestable.sh"])
     print "Restarting script to apply update."
     os.execl(sys.executable, *([sys.executable]+omitupdatearg))
 
@@ -297,6 +296,5 @@ if is_connected() == True:
         print "----RUNNING AUTOCRACK.SH----"
         subprocess.call(["sudo", "sh", "autocrack.sh"])
         print "-----DONE----"
-        print "----RUNNING AUTOCRACK----"
-        subprocess.call(["sudo", "sh", "autocrack.sh"])
+
 
