@@ -69,7 +69,7 @@ path = str(os.getcwd())
 time_now = time.strftime("%I:%M:%S")
 null = open(os.devnull, 'w')
 if args.background:
-    sys.stdout = open('%s/logs/%s_infiltrator.log' %(path, time_now), 'w')
+    sys.stdout = open('%s/logs/pifiltrator.log' %(path), 'w')
 
 if args.testmode:
     test_mode = True
