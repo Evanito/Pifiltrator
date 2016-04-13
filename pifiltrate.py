@@ -295,6 +295,6 @@ if is_connected() == True:
         subprocess.call(["chmod", "+x", "autocrack.sh"])
         print "----RUNNING AUTOCRACK.SH----"
         subprocess.call(["sudo", "sh", "autocrack.sh"])
-        print "-----DONE----"
+        print "----DONE----"
 
 
