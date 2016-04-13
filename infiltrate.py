@@ -1,3 +1,14 @@
+#Pifiltrator by Evanito
+#Github - https://github.com/Evanito/Pifiltrator
+######
+#TODO:
+#Make faulty AP detection (Blacklist ones that fail consistently)
+#Make more reliable in general
+#Auto exploit option once connected (OpenVAS, Seccubus, nmap)
+#BSSID instead of ESSID for reliability
+#Fix connecting to WPA, since it seems to hang often. (Might just be the AP I'm connecting to)
+######
+
 import csv
 import subprocess
 from scapy.all import *
@@ -27,14 +38,6 @@ if str(subprocess.check_output(["whereis", "wifite"])) == 'wifite:\n':
     else:
         print "User chose not to install, exiting."
         raise SystemExit
-    
-
-#TODO: 
-#Make faulty AP detection (Blacklist ones that fail consistently)
-#Auto-select wifi interface (Strongest or random)
-#Make more reliable in general
-#Auto exploit option once connected (OpenVAS, Seccubus, nmap)
-#BSSID instead of ESSID for reliability
 
 # Default Settings, some overwritten by args:
 test_server = 'www.google.com'
@@ -50,6 +53,15 @@ dictionary = ''
 parser = argparse.ArgumentParser()
 parser.add_argument("-bg", "--background", help="Run into logfile instead of terminal", action="store_true")
 parser.add_argument("-ac", "--autocrack", help="Runs autocrack.sh once connected, after everything else. Fill it with your custom commands.", action="store_true")
+parser.add_argument("-i", "--interface", help="Wireless interface to use.")
+parser.add_argument("-test", "--testmode", help="Will run tests regardless of need for connection.", action="store_true")
+parser.add_argument("-addr", "--address", help="Email address to receive success notification email")
+parser.add_argument("-usr", "--username", help="Email address to send notification email from, gmail recommended.")
+parser.add_argument("-pwd", "--password", help="Password for email to send notification email")
+parser.add_argument("-wpa", "--wpaattack", help="Enable the slower WPA cracking as last resort", action="store_true")
+parser.add_argument("-dict", "--dictionary", help="Dictionary to use when WPA cracking")
+parser.add_argument("--update", help="Update program from stable branch of GitHub after a success", action="store_true")
+parser.add_argument("--noreboot", help="Program won't restart computer to cycle a bad run. Not recommended in practice, but useful when testing", action="store_true")
 parser.add_argument("-i", "--interface", help="Wireless interface to use.", default="wlan0")
 parser.add_argument("-test", "--testmode", help="Will run tests regardless of need for connection.", action="store_true")
 parser.add_argument("-addr", "--address", help="Choose email address to receive notification email")
@@ -64,10 +76,10 @@ args = parser.parse_args()
 subprocess.call(["sudo", "clear"])
 path = str(os.getcwd())
 time_now = time.strftime("%I:%M:%S")
+null = open(os.devnull, 'w')
 if args.background:
     sys.stdout = open('%s/logs/%s_infiltrator.log' %(path, time_now), 'w')
-if args.interface:
-    interface = args.interface
+
 if args.testmode:
     test_mode = True
 if args.address:
@@ -82,6 +94,29 @@ if args.dictionary:
     dictionary = args.dictionary
 
 print "Pifiltrator by Evanito\n\nStarted, checking for internet..."
+
+def get_iface():
+    print 'Scanning for wireless devices since none was stated.'
+    proc = subprocess.Popen(['iwconfig'], stdout=subprocess.PIPE, stderr=null)
+    iface = ''
+    adapters = []
+    for line in proc.communicate()[0].split('\n'):
+        if len(line) == 0: continue
+        if ord(line[0]) != 32:  # Doesn't start with space
+            iface = line[:line.find(' ')]  # is the interface
+        if line.find('Mode:Monitor') == -1:
+            if iface not in adapters:
+                adapters.append(iface)
+    if len(adapters) >= 1:
+        print "Using wireless interface: %s" %(adapters[0])
+        return adapters[0]
+    else:
+        print "No wireless interfaces found.\nPlease plug in wireless interface"
+        raise SystemExit
+if args.interface:
+    interface = args.interface
+else:
+    interface = get_iface()
 
 def is_connected():
     try:
@@ -211,7 +246,6 @@ if is_connected() == False or test_mode == True:
         time.sleep(30)
         sniff(iface=interface, prn = PacketHandler, timeout=10)
     man_mode(interface)
-
     print "\n This is what we know:\n%s" %(populate_known()) 
     print "\n And here's what's nearby:\n%s" %(ap_list)
     crosschecked = crosscheck()
@@ -269,6 +303,9 @@ if is_connected() == True:
     if args.autocrack:
         open("autocrack.sh", "a")
         subprocess.call(["chmod", "+x", "autocrack.sh"])
+        print "----RUNNING AUTOCRACK.SH----"
+        subprocess.call(["sudo", "sh", "autocrack.sh"])
+        print "-----DONE----"
         print "----RUNNING AUTOCRACK----"
         subprocess.call(["sudo", "sh", "autocrack.sh"])
 
