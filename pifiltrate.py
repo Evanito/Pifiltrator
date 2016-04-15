@@ -56,7 +56,6 @@ parser.add_argument("-pwd", "--password", help="Password for email to send notif
 parser.add_argument("-wpa", "--wpaattack", help="Enable the slower WPA cracking as last resort", action="store_true")
 parser.add_argument("-dict", "--dictionary", help="Dictionary to use when WPA cracking")
 parser.add_argument("--update", help="Update program from stable branch of GitHub after a success", action="store_true")
-parser.add_argument("--noreboot", help="Program won't restart computer to cycle a bad run. Not recommended in practice, but useful when testing", action="store_true")
 args = parser.parse_args()
 
 subprocess.call(["sudo", "clear"])
@@ -212,6 +211,9 @@ def updatestable():
     subprocess.call(["sh", "updatestable.sh"])
     print "Restarting script to apply update."
     os.execl(sys.executable, *([sys.executable]+omitupdatearg))
+    
+def restartscript():
+    os.execl(sys.executable, *([sys.executable]+sys.argv))
 
 ap_list = []
 def PacketHandler(pkt):
@@ -248,8 +250,7 @@ if is_connected() == False or test_mode == True:
                     print "Connected."
                     break
                 else:
-                    if args.noreboot == False:
-                        subprocess.call(['sudo', 'reboot'])
+                    restartscript()
                     raise SystemExit
         if gotem == False and wpa_attack == True:
             subprocess.call(["sudo", "wifite", '-crack', '-dict', dictionary, '-pow', '35', '-mac', "-i", interface, '-quiet', '-wpadt', '30', '-strip', '-aircrack', '-wpa', '-wep'])	
@@ -263,8 +264,7 @@ if is_connected() == False or test_mode == True:
                         print "Connected."
                         break
                 else:
-                    if args.noreboot == False:
-                        subprocess.call(['sudo', 'reboot'])
+                    restartscript()
                     raise SystemExit
         else:
             print "None found..."
@@ -276,8 +276,7 @@ if is_connected() == False or test_mode == True:
     if is_connected() == True:
         send_email()
     else:
-        if args.noreboot == False:
-            subprocess.call(['sudo', 'reboot'])
+        restartscript()
         raise SystemExit
 
 #Time for post-infiltrate actions.
