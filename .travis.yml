@@ -4,30 +4,17 @@ branches:
   only:
     - master
 
-env:
-  - REQUIREMENTS=lowest
-  - REQUIREMENTS=release
-  - REQUIREMENTS=devel
-
 python:
   - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
 sudo: required
 
 before_install:
-  - "travis_retry pip install --upgrade pip"
-  - "travis_retry pip install requirements-builder"
-  - "requirements-builder --level=min infiltrate.py
-     > .travis-lowest-requirements.txt"
-  - "requirements-builder --level=pypi infiltrate.py
-     > .travis-release-requirements.txt"
-  - "requirements-builder --level=dev --req requirements-devel.txt infiltrate.py
-     > .travis-devel-requirements.txt"
+  - "sudo apt-get install wifite"
+  - "sudo apt-get install wireless-tools"
+
 
 install:
-  - "travis_retry pip install -r .travis-$REQUIREMENTS-requirements.txt"
-  - "pip install -e ."
+  - "sudo apt-get install python-scapy"
 
-script: python infiltrate.py
+script: 
+  - sudo python pifiltrate.py
