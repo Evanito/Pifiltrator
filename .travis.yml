@@ -9,7 +9,6 @@ python:
 sudo: required
 
 before_install:
-  - "sudo apt-get install wifite"
   - "sudo apt-get install wireless-tools"
 
 
