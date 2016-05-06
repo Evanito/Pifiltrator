@@ -1,13 +1,5 @@
 #Pifiltrator by Evanito
 #Github - https://github.com/Evanito/Pifiltrator
-######
-#TODO:
-#Make faulty AP detection (Blacklist ones that fail consistently)
-#Make more reliable in general
-#Auto exploit option once connected (OpenVAS, Seccubus, nmap)
-#BSSID instead of ESSID for reliability
-#Fix connecting to WPA, since it seems to hang often. (Might just be the AP I'm connecting to)
-######
 
 import csv
 import subprocess
