@@ -1,13 +1,5 @@
 #Pifiltrator by Evanito
 #Github - https://github.com/Evanito/Pifiltrator
-######
-#TODO:
-#Make faulty AP detection (Blacklist ones that fail consistently)
-#Make more reliable in general
-#Auto exploit option once connected (OpenVAS, Seccubus, nmap)
-#BSSID instead of ESSID for reliability
-#Fix connecting to WPA, since it seems to hang often. (Might just be the AP I'm connecting to)
-######
 
 import csv
 import subprocess
@@ -21,7 +13,6 @@ import time
 import sys
 import os
 import argparse
-import time
 import platform
 
 #Prerequisite check.
@@ -117,9 +108,8 @@ def is_connected():
         socket.create_connection((host, 80), 2)
         return True
     except:
-        pass
-    print "No internet."
-    return False
+        print "No internet."
+        return False
     
 def mon_mode(iface):
     subprocess.call(["sudo", "ifconfig", iface, "down"])
