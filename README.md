@@ -1,9 +1,9 @@
 # Pifiltrator
 <img src="https://imgur.com/NdB1p8w.png" width="200" height="250" />
 
-[![Stories in Ready](https://badge.waffle.io/Evanito/Pifiltrator.svg?label=queued&title=Issues in Queue)](http://waffle.io/Evanito/Pifiltrator)
+[![Stories in Ready](https://badge.waffle.io/Evanito/Pifiltrator.svg?label=queued&title=Issues in Queue)](http://waffle.io/Evanito/Pifiltrator) (Workflow Management)
 
-[![Code Issues](https://www.quantifiedcode.com/api/v1/project/0449d4a2f7ba497e8169885ca708f4f3/badge.svg)](https://www.quantifiedcode.com/app/project/0449d4a2f7ba497e8169885ca708f4f3)
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/0449d4a2f7ba497e8169885ca708f4f3/badge.svg)](https://www.quantifiedcode.com/app/project/0449d4a2f7ba497e8169885ca708f4f3) (Bug Management)
 
 
 #####[New? Check out the wiki](https://github.com/Evanito/Pifiltrator/wiki)
