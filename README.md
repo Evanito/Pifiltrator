@@ -1,5 +1,6 @@
 # Pifiltrator
-<img src="https://imgur.com/NdB1p8w.png" width="200" height="250" />
+<img src="https://imgur.com/NdB1p8w.png" width="200" height="250" />[![Stories in Ready](https://badge.waffle.io/Evanito/Pifiltrator.svg?label=queued&title=Issues in Queue)](http://waffle.io/Evanito/Pifiltrator)
+
 #####[New? Check out the wiki](https://github.com/Evanito/Pifiltrator/wiki)
 #####[Submit a bug](https://github.com/Evanito/Pifiltrator/issues/new)
 
