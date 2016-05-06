@@ -3,7 +3,7 @@
 
 import csv
 import subprocess
-from scapy.all import sniff
+from scapy.all import *
 import smtplib
 import netifaces as ni
 import socket
