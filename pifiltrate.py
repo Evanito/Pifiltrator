@@ -3,7 +3,7 @@
 
 import csv
 import subprocess
-from scapy.all import *
+from scapy.all import sniff
 import smtplib
 import netifaces as ni
 import socket
@@ -100,9 +100,8 @@ def is_connected():
         socket.create_connection((host, 80), 2)
         return True
     except:
-        pass
-    print "No internet."
-    return False
+        print "No internet."
+        return False
     
 def mon_mode(iface):
     subprocess.call(["sudo", "ifconfig", iface, "down"])
