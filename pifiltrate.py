@@ -3,6 +3,8 @@
 
 import csv
 import subprocess
+import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 import smtplib
 import netifaces as ni
@@ -24,7 +26,13 @@ if str(subprocess.check_output(["whereis", "wifite"])) == 'wifite:\n':
     else:
         print "User chose not to install, exiting."
         raise SystemExit
-
+if str(subprocess.check_output(["whereis", "wifi"])) == 'wifi:\n':
+    print "Wifi library not found, using WPA_Supplicant."
+    wififound = False
+else:
+    import wifi
+    wififound = True
+        
 # Default Settings, some overwritten by args:
 test_server = 'www.google.com'
 username = ''
@@ -148,10 +156,17 @@ def populate_known():
         return networks
 
 def connect_wifi(iface, ap, passwd):
-    if encrypt_type(ap) == 'WPA' or encrypt_type(ap) == 'WPA2':
-        wpa_connect(iface, ap, passwd)
-    if encrypt_type(ap) == 'WEP':
-        wep_connect(iface, ap, passwd)
+    if wififound == False:
+        if encrypt_type(ap) == 'WPA' or encrypt_type(ap) == 'WPA2':
+            wpa_connect(iface, ap, passwd)
+        if encrypt_type(ap) == 'WEP':
+            wep_connect(iface, ap, passwd)
+    else:
+        cells = wifi.Cell.all(iface)
+        cell = [s for s in cells if ap in s][0]
+        scheme = wifi.Scheme.for_cell(iface, ap, cell, passkey=passwd)
+        scheme.save()
+        scheme.activate()
 
 def send_email():
     if toaddrs != '' and username != '' and pwd != '':
@@ -260,7 +275,6 @@ if is_connected() == False or test_mode == True:
     else:
         print "\nWe have one!\n%s ; %s" %(crosschecked[1], crosschecked[2])
         connect_wifi(interface, crosschecked[1], crosschecked[2])
-
     if is_connected() == True:
         send_email()
     else:
